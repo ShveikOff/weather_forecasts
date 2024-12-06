@@ -5,6 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.widget.TextView
 import com.example.weatherforecast.api.APImanager
 import com.example.weatherforecast.api.WeatherResponse
+import android.content.Intent
+import android.widget.Button
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,6 +38,13 @@ class MainActivity : AppCompatActivity() {
                     temperatureTextView.text = "Failed to load data"
                 }
             }
+        }
+
+        // Кнопка "Extended"
+        val extendedButton: Button = findViewById(R.id.button_extended)
+        extendedButton.setOnClickListener {
+            val intent = Intent(this, ExtendedForecastActivity::class.java)
+            startActivity(intent)
         }
     }
 }

@@ -5,4 +5,11 @@
     <string name="morning">Morning</string>
     <string name="afternoon">Afternoon</string>
     <string name="evening">Evening</string>
+    <string name="back">Back</string>
+    <string name="menu">Menu</string>
+    <string-array name="forecast_options">
+        <item>For 5 days</item>
+        <item>For 14 days</item>
+        <item>For a month</item>
+    </string-array>
 </resources>
