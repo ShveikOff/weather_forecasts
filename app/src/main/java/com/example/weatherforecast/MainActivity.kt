@@ -46,5 +46,12 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, ExtendedForecastActivity::class.java)
             startActivity(intent)
         }
+
+        // Кнопка "Map"
+        val mapButton: Button = findViewById(R.id.button_map)
+        mapButton.setOnClickListener {
+            val intent = Intent(this, ForecastMapActivity::class.java)
+            startActivity(intent)
+        }
     }
 }

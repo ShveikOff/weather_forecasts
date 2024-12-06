@@ -7,6 +7,8 @@
     <string name="evening">Evening</string>
     <string name="back">Back</string>
     <string name="menu">Menu</string>
+    <string name="layer_options">Layer Options</string>
+    <string name="route_options">Route Options</string>
     <string-array name="forecast_options">
         <item>For 5 days</item>
         <item>For 14 days</item>
