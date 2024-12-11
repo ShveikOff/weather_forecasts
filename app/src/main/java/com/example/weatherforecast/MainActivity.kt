@@ -55,6 +55,14 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        // Кнопка "Reccomendation"
+        val reccButton: Button = findViewById(R.id.recommendation)
+        reccButton.setOnClickListener {
+            val intent = Intent(this, RecomendationActivity::class.java)
+            startActivity(intent)
+        }
+
+
         // Найти кнопку по ID
         val addButton: ImageView = findViewById(R.id.addButton)
 

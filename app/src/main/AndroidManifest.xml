@@ -32,6 +32,7 @@
         <activity android:name=".ExtendedForecastActivity" />
         <activity android:name=".ForecastMapActivity" />
         <activity android:name=".CityChooseActivity" />
+        <activity android:name=".RecomendationActivity" />
     </application>
 
 </manifest>
