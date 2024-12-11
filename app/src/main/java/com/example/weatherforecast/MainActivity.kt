@@ -3,6 +3,7 @@ package com.example.weatherforecast
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.TextView
+import android.widget.ImageView
 import com.example.weatherforecast.api.APImanager
 import com.example.weatherforecast.api.WeatherResponse
 import android.content.Intent
@@ -51,6 +52,15 @@ class MainActivity : AppCompatActivity() {
         val mapButton: Button = findViewById(R.id.button_map)
         mapButton.setOnClickListener {
             val intent = Intent(this, ForecastMapActivity::class.java)
+            startActivity(intent)
+        }
+
+        // Найти кнопку по ID
+        val addButton: ImageView = findViewById(R.id.addButton)
+
+        // Установить слушатель для переключения на CityChooseActivity
+        addButton.setOnClickListener {
+            val intent = Intent(this, CityChooseActivity::class.java)
             startActivity(intent)
         }
     }
