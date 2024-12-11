@@ -18,6 +18,7 @@ class APImanager {
 
     private val weatherAPI = retrofit.create(WeatherAPI::class.java)
 
+    // Изменить метод, чтобы он принимал либо локальное значение пользователя, либо город по выбору пользователя
     fun getWeather(city: String, callback: (WeatherResponse?) -> Unit) {
         val call = weatherAPI.getCurrentWeather(city, API_KEY)
 
@@ -36,4 +37,10 @@ class APImanager {
             }
         })
     }
+    // Добавить методы на прогноза на 5, 14 дней и месяц
+    // Метод который будет с openWeather брать слои температуры, осадков и качества воздуха
+    // Вынести для ForeCastMapActivity метод для отображения Google Map основного слоя
+    /* Метод который будет взаимодействовать с Google Directions API, вводные данные две координаты
+    * он должен вернуть данные для построения маршрута на экране*/
+
 }
