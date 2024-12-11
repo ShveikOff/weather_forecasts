@@ -16,6 +16,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Проверяем, прошел ли пользователь опрос
+        val isQuizCompleted = getQuizCompletionStatus()
+        if (!isQuizCompleted) {
+            // Если нет, запускаем UserQuizActivity
+            val intent = Intent(this, UserQuizActivity::class.java)
+            startActivityForResult(intent, QUIZ_REQUEST_CODE)
+        }
+
         // Найдите ваш TextView с ID temperatureCircle
         val temperatureTextView: TextView = findViewById(R.id.temperatureCircle)
 
@@ -81,5 +89,36 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == QUIZ_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                // Пользователь завершил опрос
+                saveQuizCompletionStatus(true)
+            } else {
+                // Пользователь выбрал "Пропустить"
+                saveQuizCompletionStatus(false)
+            }
+        }
+    }
+
+    private fun getQuizCompletionStatus(): Boolean {
+        // Замените на реальную логику для проверки (например, SharedPreferences)
+        val sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE)
+        return sharedPreferences.getBoolean("quiz_completed", false)
+    }
+
+    private fun saveQuizCompletionStatus(completed: Boolean) {
+        // Сохраняем статус прохождения опроса
+        val sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putBoolean("quiz_completed", completed)
+        editor.apply()
+    }
+
+    companion object {
+        private const val QUIZ_REQUEST_CODE = 1001
     }
 }

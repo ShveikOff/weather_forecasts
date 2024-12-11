@@ -34,6 +34,7 @@
         <activity android:name=".CityChooseActivity" />
         <activity android:name=".RecomendationActivity" />
         <activity android:name=".SettingsActivity" />
+        <activity android:name=".UserQuizActivity" />
     </application>
 
 </manifest>
