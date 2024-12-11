@@ -33,6 +33,7 @@
         <activity android:name=".ForecastMapActivity" />
         <activity android:name=".CityChooseActivity" />
         <activity android:name=".RecomendationActivity" />
+        <activity android:name=".SettingsActivity" />
     </application>
 
 </manifest>

@@ -71,5 +71,15 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, CityChooseActivity::class.java)
             startActivity(intent)
         }
+
+        // Найти кнопку по ID
+        val settingsButton: ImageView = findViewById(R.id.settingsButton)
+
+        // Установить слушатель для переключения на SettingsActivity
+        settingsButton.setOnClickListener {
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 }
