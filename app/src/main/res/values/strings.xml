@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">WeatherForecast</string>
+    <string name="app_name">Weather Forecast</string>
+    <string name="add">Добавить</string>
+    <string name="settings">Настройки</string>
+    <string name="extended_forecast_title">Прогноз погоды</string>
+    <string name="layer_options">Выбор слоя</string>
+    <string name="route_options">Выбор маршрута</string>
 </resources>
