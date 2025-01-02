@@ -1,5 +1,6 @@
 package com.example.weatherforecast.api
 
+import com.example.weatherforecast.models.RouteResponse
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.Call
@@ -8,19 +9,32 @@ import retrofit2.Response
 
 class APImanager {
 
-    private val BASE_URL = "https://api.openweathermap.org/data/2.5/"
-    private val API_KEY = "86ce19f8df8381eeda67a798434148fd" // Замените на ваш API-ключ OpenWeatherMap
+    // API ключ OpenRouteService
+    private val OPENROUTE_API_KEY = "5b3ce3597851110001cf6248585682bb6bb84bd986e6c6e2a5b66d10"
 
-    private val retrofit = Retrofit.Builder()
+    // Базовые URL
+    private val BASE_URL = "https://api.openweathermap.org/data/2.5/"
+    private val OPENROUTE_BASE_URL = "https://api.openrouteservice.org/"
+
+    // Инициализация Retrofit для OpenWeatherMap
+    private val retrofitWeather = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    private val weatherAPI = retrofit.create(WeatherAPI::class.java)
+    private val weatherAPI = retrofitWeather.create(WeatherAPI::class.java)
 
-    // Изменить метод, чтобы он принимал либо локальное значение пользователя, либо город по выбору пользователя
+    // Инициализация Retrofit для OpenRouteService
+    private val retrofitOpenRoute = Retrofit.Builder()
+        .baseUrl(OPENROUTE_BASE_URL)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    private val openRouteAPI = retrofitOpenRoute.create(OpenRouteServiceAPI::class.java)
+
+    // Получение текущей погоды
     fun getWeather(city: String, callback: (WeatherResponse?) -> Unit) {
-        val call = weatherAPI.getCurrentWeather(city, API_KEY)
+        val call = weatherAPI.getCurrentWeather(city, OPENROUTE_API_KEY)
 
         call.enqueue(object : Callback<WeatherResponse> {
             override fun onResponse(call: Call<WeatherResponse>, response: Response<WeatherResponse>) {
@@ -37,10 +51,48 @@ class APImanager {
             }
         })
     }
-    // Добавить методы на прогноза на 5, 14 дней и месяц
-    // Метод который будет с openWeather брать слои температуры, осадков и качества воздуха
-    // Вынести для ForeCastMapActivity метод для отображения Google Map основного слоя
-    /* Метод который будет взаимодействовать с Google Directions API, вводные данные две координаты
-    * он должен вернуть данные для построения маршрута на экране*/
 
+    // Получение прогноза на 5 дней
+    fun get5DayForecast(city: String, callback: (ForecastResponse?) -> Unit) {
+        val call = weatherAPI.get5DayForecast(city, OPENROUTE_API_KEY)
+
+        call.enqueue(object : Callback<ForecastResponse> {
+            override fun onResponse(call: Call<ForecastResponse>, response: Response<ForecastResponse>) {
+                if (response.isSuccessful) {
+                    callback(response.body())
+                } else {
+                    callback(null)
+                }
+            }
+
+            override fun onFailure(call: Call<ForecastResponse>, t: Throwable) {
+                t.printStackTrace()
+                callback(null)
+            }
+        })
+    }
+
+    // Получение маршрута между двумя координатами через OpenRouteService
+    fun getRoute(
+        start: String, // Координаты начальной точки (например, "13.388860,52.517037")
+        end: String,   // Координаты конечной точки (например, "13.397634,52.529407")
+        callback: (RouteResponse?) -> Unit
+    ) {
+        val call = openRouteAPI.getRoute(OPENROUTE_API_KEY, start, end)
+
+        call.enqueue(object : Callback<RouteResponse> {
+            override fun onResponse(call: Call<RouteResponse>, response: Response<RouteResponse>) {
+                if (response.isSuccessful) {
+                    callback(response.body())
+                } else {
+                    callback(null)
+                }
+            }
+
+            override fun onFailure(call: Call<RouteResponse>, t: Throwable) {
+                t.printStackTrace()
+                callback(null)
+            }
+        })
+    }
 }
