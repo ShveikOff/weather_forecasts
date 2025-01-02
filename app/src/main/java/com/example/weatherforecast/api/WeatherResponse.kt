@@ -7,7 +7,7 @@ data class WeatherResponse(
 )
 
 data class Main(
-    val temp: Double,
+    val temp: Float,
     val pressure: Int,
     val humidity: Int
 )

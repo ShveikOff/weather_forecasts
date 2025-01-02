@@ -12,7 +12,7 @@
         android:id="@+id/titleLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Bishkek"
+        android:text="Yeeep"
         android:textSize="24sp"
         android:textColor="#3B82F6"
         android:textStyle="bold"
@@ -87,6 +87,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginHorizontal="16dp">
 
+        <!-- Утро -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -95,29 +96,20 @@
             android:gravity="center">
 
             <ImageView
+                android:id="@+id/morningImageView"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:src="@drawable/ic_sunny"
                 android:contentDescription="@string/morning" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Morning"
-                android:textColor="#3B82F6"
-                android:textSize="16sp" />
-
-            <TextView
+                android:id="@+id/morningTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Fair 5°"
+                android:textColor="#3B82F6"
                 android:textSize="14sp" />
         </LinearLayout>
-
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="#3B82F6" />
 
         <!-- День -->
         <LinearLayout
@@ -128,29 +120,20 @@
             android:gravity="center">
 
             <ImageView
+                android:id="@+id/afternoonImageView"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:src="@drawable/ic_cloud"
                 android:contentDescription="@string/afternoon" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Afternoon"
-                android:textColor="#3B82F6"
-                android:textSize="16sp" />
-
-            <TextView
+                android:id="@+id/afternoonTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Cloudy 12°"
+                android:textColor="#3B82F6"
                 android:textSize="14sp" />
         </LinearLayout>
-
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="#3B82F6" />
 
         <!-- Вечер -->
         <LinearLayout
@@ -161,25 +144,22 @@
             android:gravity="center">
 
             <ImageView
+                android:id="@+id/eveningImageView"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:src="@drawable/ic_partly_cloudy_night"
                 android:contentDescription="@string/evening" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Evening"
-                android:textColor="#3B82F6"
-                android:textSize="16sp" />
-
-            <TextView
+                android:id="@+id/eveningTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Fair 7°"
+                android:textColor="#3B82F6"
                 android:textSize="14sp" />
         </LinearLayout>
     </LinearLayout>
+
 
     <!-- Нижние кнопки -->
     <LinearLayout

@@ -5,11 +5,10 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface WeatherAPI {
-
-    // Текущая погода
     @GET("weather")
     fun getCurrentWeather(
         @Query("q") city: String,
+        @Query("units") units: String,
         @Query("appid") apiKey: String
     ): Call<WeatherResponse>
 
@@ -19,4 +18,18 @@ interface WeatherAPI {
         @Query("q") city: String,
         @Query("appid") apiKey: String
     ): Call<ForecastResponse>
+
+    @GET("forecast")
+    fun getDailyForecast(
+        @Query("q") city: String,
+        @Query("units") units: String = "metric",
+        @Query("appid") apiKey: String
+    ): Call<DailyForecastResponse>
+
+    @GET("air_pollution")
+    fun getAirQuality(
+        @Query("lat") lat: Double,
+        @Query("lon") lon: Double,
+        @Query("appid") apiKey: String
+    ): Call<AirQualityResponse>
 }

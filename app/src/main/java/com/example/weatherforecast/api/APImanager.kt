@@ -1,5 +1,9 @@
 package com.example.weatherforecast.api
 
+import android.content.Context
+import android.location.Location
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.example.weatherforecast.models.RouteResponse
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -7,10 +11,12 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class APImanager {
+
+class APImanager(private val context: Context) {
 
     // API ключ OpenRouteService
     private val OPENROUTE_API_KEY = "5b3ce3597851110001cf6248585682bb6bb84bd986e6c6e2a5b66d10"
+    private val OPENWEATHER_API_KEY = "86ce19f8df8381eeda67a798434148fd"
 
     // Базовые URL
     private val BASE_URL = "https://api.openweathermap.org/data/2.5/"
@@ -32,9 +38,23 @@ class APImanager {
 
     private val openRouteAPI = retrofitOpenRoute.create(OpenRouteServiceAPI::class.java)
 
-    // Получение текущей погоды
+    // Инициализация клиента для получения местоположения
+    private val fusedLocationClient: FusedLocationProviderClient =
+        LocationServices.getFusedLocationProviderClient(context)
+
+    // Получение текущего местоположения
+    fun getCurrentLocation(callback: (Location?) -> Unit) {
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            callback(location)
+        }.addOnFailureListener { exception ->
+            exception.printStackTrace()
+            callback(null)
+        }
+    }
+
+    // Получение текущей погоды4
     fun getWeather(city: String, callback: (WeatherResponse?) -> Unit) {
-        val call = weatherAPI.getCurrentWeather(city, OPENROUTE_API_KEY)
+        val call = weatherAPI.getCurrentWeather(city, "metric", OPENWEATHER_API_KEY)
 
         call.enqueue(object : Callback<WeatherResponse> {
             override fun onResponse(call: Call<WeatherResponse>, response: Response<WeatherResponse>) {
@@ -95,4 +115,46 @@ class APImanager {
             }
         })
     }
+
+    fun getAirQuality(lat: Double, lon: Double, callback: (AirQualityResponse?) -> Unit) {
+        val call = weatherAPI.getAirQuality(lat, lon, OPENWEATHER_API_KEY)
+
+        call.enqueue(object : Callback<AirQualityResponse> {
+            override fun onResponse(call: Call<AirQualityResponse>, response: Response<AirQualityResponse>) {
+                if (response.isSuccessful) {
+                    callback(response.body())
+                } else {
+                    callback(null)
+                }
+            }
+
+            override fun onFailure(call: Call<AirQualityResponse>, t: Throwable) {
+                t.printStackTrace()
+                callback(null)
+            }
+        })
+    }
+
+    fun getDailyForecast(city: String, callback: (List<DailyForecastItem>?) -> Unit) {
+        val call = weatherAPI.getDailyForecast(city, "metric", OPENWEATHER_API_KEY)
+        call.enqueue(object : Callback<DailyForecastResponse> {
+            override fun onResponse(call: Call<DailyForecastResponse>, response: Response<DailyForecastResponse>) {
+                if (response.isSuccessful) {
+                    val forecastList = response.body()?.list
+                    callback(forecastList)
+                } else {
+                    callback(null)
+                }
+            }
+
+            override fun onFailure(call: Call<DailyForecastResponse>, t: Throwable) {
+                t.printStackTrace()
+                callback(null)
+            }
+        })
+    }
+
+
+
+
 }
