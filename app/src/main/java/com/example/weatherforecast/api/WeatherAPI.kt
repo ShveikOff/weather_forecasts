@@ -19,7 +19,7 @@ interface WeatherAPI {
         @Query("appid") apiKey: String
     ): Call<ForecastResponse>
 
-    @GET("forecast")
+    @GET("forecast/daily")
     fun getDailyForecast(
         @Query("q") city: String,
         @Query("units") units: String = "metric",
@@ -32,4 +32,12 @@ interface WeatherAPI {
         @Query("lon") lon: Double,
         @Query("appid") apiKey: String
     ): Call<AirQualityResponse>
+
+    @GET("find")
+    fun searchCities(
+        @Query("q") query: String,
+        @Query("units") units: String,
+        @Query("appid") apiKey: String
+    ): Call<CitySearchResponse>
+
 }

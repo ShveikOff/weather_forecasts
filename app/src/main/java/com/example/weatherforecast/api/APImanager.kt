@@ -2,17 +2,19 @@ package com.example.weatherforecast.api
 
 import android.content.Context
 import android.location.Location
+import android.util.Log
+import com.example.weatherforecast.City
+import com.example.weatherforecast.models.RouteResponse
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.example.weatherforecast.models.RouteResponse
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 
-class APImanager(private val context: Context) {
+object APImanager {
 
     // API ключ OpenRouteService
     private val OPENROUTE_API_KEY = "5b3ce3597851110001cf6248585682bb6bb84bd986e6c6e2a5b66d10"
@@ -38,18 +40,20 @@ class APImanager(private val context: Context) {
 
     private val openRouteAPI = retrofitOpenRoute.create(OpenRouteServiceAPI::class.java)
 
-    // Инициализация клиента для получения местоположения
-    private val fusedLocationClient: FusedLocationProviderClient =
-        LocationServices.getFusedLocationProviderClient(context)
+    private var fusedLocationClient: FusedLocationProviderClient? = null
+
+    fun initialize(context: Context) {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+    }
 
     // Получение текущего местоположения
     fun getCurrentLocation(callback: (Location?) -> Unit) {
-        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+        fusedLocationClient?.lastLocation?.addOnSuccessListener { location ->
             callback(location)
-        }.addOnFailureListener { exception ->
+        }?.addOnFailureListener { exception ->
             exception.printStackTrace()
             callback(null)
-        }
+        } ?: callback(null)
     }
 
     // Получение текущей погоды4
@@ -141,8 +145,14 @@ class APImanager(private val context: Context) {
             override fun onResponse(call: Call<DailyForecastResponse>, response: Response<DailyForecastResponse>) {
                 if (response.isSuccessful) {
                     val forecastList = response.body()?.list
+                    if (forecastList.isNullOrEmpty()) {
+                        Log.e("Forecast", "Forecast list is empty")
+                    } else {
+                        Log.d("Forecast", "Received forecast data: $forecastList")
+                    }
                     callback(forecastList)
                 } else {
+                    Log.e("Forecast", "API response error: ${response.errorBody()?.string()}")
                     callback(null)
                 }
             }
@@ -154,7 +164,39 @@ class APImanager(private val context: Context) {
         })
     }
 
+    fun searchCities(query: String, callback: (List<City>?) -> Unit) {
+        Log.d("APIManager", "Searching cities for query: $query") // Лог начала запроса
 
+        val call = weatherAPI.searchCities(query,"metric", OPENWEATHER_API_KEY)
+        call.enqueue(object : Callback<CitySearchResponse> {
+            override fun onResponse(call: Call<CitySearchResponse>, response: Response<CitySearchResponse>) {
+                if (response.isSuccessful) {
+                    Log.d("APIManager", "City search successful, response code: ${response.code()}") // Лог успешного ответа
+
+                    val cities = response.body()?.list?.map {
+                        City(
+                            name = it.name,
+                            aqi = "N/A", // AQI будет обновлен позже
+                            details = "",
+                            temperature = "${it.main.temp.toInt()}°",
+                            lat = it.coord.lat, // Координаты из ответа API
+                            lon = it.coord.lon
+                        )
+                    }
+                    Log.d("APIManager", "Cities mapped: $cities") // Лог преобразованных данных
+                    callback(cities)
+                } else {
+                    Log.e("APIManager", "City search failed, error code: ${response.code()}") // Лог ошибки с кодом ответа
+                    callback(null)
+                }
+            }
+
+            override fun onFailure(call: Call<CitySearchResponse>, t: Throwable) {
+                Log.e("APIManager", "City search request failed: ${t.message}", t) // Лог ошибки запроса
+                callback(null)
+            }
+        })
+    }
 
 
 }

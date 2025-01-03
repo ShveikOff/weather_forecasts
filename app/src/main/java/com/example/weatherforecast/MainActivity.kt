@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import android.widget.ImageView
 import android.widget.Button
@@ -22,11 +23,11 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var cityTextView: TextView
-    private val apiManager by lazy { APImanager(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        APImanager.initialize(this)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         cityTextView = findViewById(R.id.titleLabel)
@@ -49,7 +50,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getCurrentLocation() {
-        apiManager.getCurrentLocation { location ->
+        APImanager.getCurrentLocation { location ->
             if (location != null) {
                 val geocoder = Geocoder(this, Locale.getDefault())
                 val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
@@ -57,7 +58,7 @@ class MainActivity : AppCompatActivity() {
                     val city = addresses[0].locality ?: "Unknown"
                     cityTextView.text = city
                     updateAQI(location.latitude, location.longitude)
-                    updateForecast(city)
+                    // updateForecast(city)
                     fetchWeatherData(city)
                 }
             }
@@ -65,7 +66,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateAQI(lat: Double, lon: Double) {
-        apiManager.getAirQuality(lat, lon) { airQualityResponse ->
+        APImanager.getAirQuality(lat, lon) { airQualityResponse ->
             runOnUiThread {
                 if (airQualityResponse != null) {
                     val aqi = airQualityResponse.list.firstOrNull()?.main?.aqi
@@ -85,24 +86,35 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Данный функционал не повзоляет реализовать текущий тарифный план API
+    /*
     private fun updateForecast(city: String) {
         apiManager.getDailyForecast(city) { forecastList ->
             runOnUiThread {
+                if (forecastList == null || forecastList.isEmpty()) {
+                    Log.e("Forecast", "Forecast data is null or empty")
+                } else {
+                    Log.d("Forecast", "Forecast data: $forecastList")
+                }
                 if (forecastList != null && forecastList.isNotEmpty()) {
                     val morning = forecastList[0]
                     val afternoon = forecastList[4]
                     val evening = forecastList[8]
+                    Log.d("Forecast", "Morning: $morning, Afternoon: $afternoon, Evening: $evening")
 
                     if (morning.temp == null) {
                         println("Morning temperature is null")
+                        Log.e("Forecast", "Temperature data is missing")
                     }
 
                     if (afternoon.temp == null) {
                         println("Afternoon temperature is null")
+                        Log.e("Forecast", "Temperature data is missing")
                     }
 
                     if (evening.temp == null) {
                         println("Evening temperature is null")
+                        Log.e("Forecast", "Temperature data is missing")
                     }
 
                     // Проверяем, что temp не null, прежде чем обращаться к нему
@@ -132,13 +144,15 @@ class MainActivity : AppCompatActivity() {
                             "${evening.weather[0].description.capitalize()} ${temp.day?.toInt() ?: "N/A"}°"
                         )
                     }
+                } else {
+                    Log.e("Forecast", "Forecast data is null or empty")
                 }
             }
         }
-    }
+    } */
 
     private fun fetchWeatherData(city: String) {
-        apiManager.getWeather(city) { weatherResponse ->
+        APImanager.getWeather(city) { weatherResponse ->
             if (weatherResponse != null) {
                 val temperature = weatherResponse.main.temp
                 val description = weatherResponse.weather[0].description
@@ -150,7 +164,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
+    // Данный функционал пока не позволяет реализовать текущий тарифный план
+    /*
     private fun updateForecastElement(imageViewId: Int, textViewId: Int, iconCode: String, description: String) {
         val imageView = findViewById<ImageView>(imageViewId)
         val textView = findViewById<TextView>(textViewId)
@@ -158,7 +173,7 @@ class MainActivity : AppCompatActivity() {
         val iconUrl = "https://openweathermap.org/img/wn/$iconCode@2x.png"
         Glide.with(this).load(iconUrl).into(imageView)
         textView.text = description
-    }
+    }*/
 
     private fun initializeButtons() {
         findViewById<Button>(R.id.button_extended).setOnClickListener {
