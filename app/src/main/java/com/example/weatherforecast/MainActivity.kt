@@ -29,6 +29,15 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         APImanager.initialize(this)
 
+        // Подписка на изменения выбранного города
+        FavoriteCitiesRepository.selectedCity.observe(this) { city ->
+            if (city != null) {
+                cityTextView.text = city.name
+                updateAQI(city.lat, city.lon)
+                fetchWeatherData(city.name)
+            }
+        }
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         cityTextView = findViewById(R.id.titleLabel)
 
@@ -45,22 +54,23 @@ class MainActivity : AppCompatActivity() {
                 this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE
             )
         } else {
-            getCurrentLocation()
+            fetchLocationAndSetWeather()
         }
     }
 
-    private fun getCurrentLocation() {
+    private fun fetchLocationAndSetWeather() {
         APImanager.getCurrentLocation { location ->
             if (location != null) {
                 val geocoder = Geocoder(this, Locale.getDefault())
                 val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-                if (addresses != null && addresses.isNotEmpty()) {
+                if (!addresses.isNullOrEmpty()) {
                     val city = addresses[0].locality ?: "Unknown"
                     cityTextView.text = city
                     updateAQI(location.latitude, location.longitude)
-                    // updateForecast(city)
                     fetchWeatherData(city)
                 }
+            } else {
+                Log.e("MainActivity", "Не удалось определить местоположение")
             }
         }
     }

@@ -2,9 +2,12 @@ package com.example.weatherforecast
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.Spinner
 import android.widget.ArrayAdapter
+import androidx.core.content.ContextCompat
+import com.example.weatherforecast.api.APImanager
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
@@ -14,43 +17,37 @@ class ExtendedForecastActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_extended_forecast)
+        APImanager.initialize(this)
 
-        val spinner: Spinner = findViewById(R.id.forecastSpinner)
-        ArrayAdapter.createFromResource(
-            this,
-            R.array.forecast_options,
-            R.layout.spinner_item // Кастомная разметка для выбранного элемента
-        ).also { adapter ->
-            adapter.setDropDownViewResource(R.layout.dropdown_item) // Кастомная разметка для элементов списка
-            spinner.adapter = adapter
-        }
-
-        val chart: LineChart = findViewById(R.id.forecastChart)
-        setupPlaceholderChartData(chart)
+        val cityName = "Bishkek" // Здесь можно динамически подставить выбранный город.
+        fetchForecast(cityName)
     }
 
-    private fun setupPlaceholderChartData(chart: LineChart) {
-        // Создаем список захардкоженных данных
-        val entries = listOf(
-            Entry(0f, 10f),
-            Entry(1f, 15f),
-            Entry(2f, 8f),
-            Entry(3f, 12f),
-            Entry(4f, 18f),
-            Entry(5f, 20f)
-        )
+    private fun fetchForecast(city: String) {
+        APImanager.get5DayForecast(city) { forecastResponse ->
+            if (forecastResponse != null) {
+                val dataPoints = forecastResponse.list.map { forecastItem ->
+                    Pair(forecastItem.dt_txt, forecastItem.main.temp.toDouble())
+                }
+                updateChart(dataPoints)
+            } else {
+                Log.e("ExtendedForecast", "Failed to fetch forecast data")
+            }
+        }
+    }
 
-        // Создаем набор данных с этими значениями
-        val dataSet = LineDataSet(entries, "Temperature over Time")
-        dataSet.color = Color.BLUE
-        dataSet.valueTextColor = Color.BLACK
-        dataSet.lineWidth = 2f
-        dataSet.circleRadius = 4f
-        dataSet.setCircleColor(Color.BLUE)
-
-        // Создаем LineData и передаем его графику
+    private fun updateChart(dataPoints: List<Pair<String, Double>>) {
+        val entries = dataPoints.mapIndexed { index, data ->
+            Entry(index.toFloat(), data.second.toFloat())
+        }
+        val dataSet = LineDataSet(entries, "Temperature")
+        dataSet.color = ContextCompat.getColor(this, R.color.purple_500)
+        dataSet.valueTextColor = ContextCompat.getColor(this, R.color.black)
         val lineData = LineData(dataSet)
-        chart.data = lineData
-        chart.invalidate() // Обновляем график
+
+        findViewById<LineChart>(R.id.forecastChart).apply {
+            data = lineData
+            invalidate()
+        }
     }
 }

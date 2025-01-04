@@ -3,7 +3,15 @@
     <style name="Base.Theme.WeatherForecast" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:textColor">@color/black</item>
     </style>
+    <style name="AppTheme.Dialog.Alert" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="colorAccent">#FF6200EE</item> <!-- Цвет кнопок -->
+        <item name="textAppearanceButton">@style/AlertDialogButtonTextStyle</item>
+    </style>
 
+    <style name="AlertDialogButtonTextStyle" parent="TextAppearance.MaterialComponents.Button">
+        <item name="android:textSize">18sp</item> <!-- Размер текста кнопок -->
+        <item name="android:textColor">#FF6200EE</item> <!-- Цвет текста кнопок -->
+    </style>
 
     <style name="Theme.WeatherForecast" parent="Base.Theme.WeatherForecast" />
 </resources>

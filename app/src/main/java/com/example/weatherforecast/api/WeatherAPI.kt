@@ -16,6 +16,7 @@ interface WeatherAPI {
     @GET("forecast")
     fun get5DayForecast(
         @Query("q") city: String,
+        @Query("units") units: String,
         @Query("appid") apiKey: String
     ): Call<ForecastResponse>
 

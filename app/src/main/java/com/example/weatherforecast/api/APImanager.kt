@@ -5,6 +5,7 @@ import android.location.Location
 import android.util.Log
 import com.example.weatherforecast.City
 import com.example.weatherforecast.models.RouteResponse
+import com.github.mikephil.charting.BuildConfig
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import retrofit2.Call
@@ -78,23 +79,27 @@ object APImanager {
 
     // Получение прогноза на 5 дней
     fun get5DayForecast(city: String, callback: (ForecastResponse?) -> Unit) {
-        val call = weatherAPI.get5DayForecast(city, OPENROUTE_API_KEY)
-
+        val call = weatherAPI.get5DayForecast(city, "metric", OPENWEATHER_API_KEY)
         call.enqueue(object : Callback<ForecastResponse> {
-            override fun onResponse(call: Call<ForecastResponse>, response: Response<ForecastResponse>) {
+            override fun onResponse(
+                call: Call<ForecastResponse>,
+                response: Response<ForecastResponse>
+            ) {
                 if (response.isSuccessful) {
                     callback(response.body())
                 } else {
                     callback(null)
+                    Log.e("APImanager", "Failed to fetch 5-day forecast: ${response.code()}")
                 }
             }
 
             override fun onFailure(call: Call<ForecastResponse>, t: Throwable) {
-                t.printStackTrace()
                 callback(null)
+                Log.e("APImanager", "Error: ${t.message}")
             }
         })
     }
+
 
     // Получение маршрута между двумя координатами через OpenRouteService
     fun getRoute(
