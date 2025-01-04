@@ -59,20 +59,47 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun fetchLocationAndSetWeather() {
-        APImanager.getCurrentLocation { location ->
-            if (location != null) {
-                val geocoder = Geocoder(this, Locale.getDefault())
-                val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-                if (!addresses.isNullOrEmpty()) {
-                    val city = addresses[0].locality ?: "Unknown"
-                    cityTextView.text = city
-                    updateAQI(location.latitude, location.longitude)
-                    fetchWeatherData(city)
+        if (FavoriteCitiesRepository.selectedCity.value == null) {
+            APImanager.getCurrentLocation { location ->
+                if (location != null) {
+                    val geocoder = Geocoder(this, Locale.getDefault())
+                    val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+                    if (!addresses.isNullOrEmpty()) {
+                        val cityName = addresses[0].locality ?: "Unknown"
+                        APImanager.getWeather(cityName) { weatherResponse ->
+                            if (weatherResponse != null) {
+                                val city = City(
+                                    name = cityName,
+                                    aqi = "N/A", // AQI загружается отдельно
+                                    details = "",
+                                    temperature = "${weatherResponse.main.temp}°C", // Преобразование в строку
+                                    lat = location.latitude,
+                                    lon = location.longitude
+                                )
+                                FavoriteCitiesRepository.selectCity(city)
+                                updateAQI(location.latitude, location.longitude)
+                                fetchWeatherData(cityName)
+                            } else {
+                                Log.e("MainActivity", "Не удалось загрузить данные о погоде")
+                            }
+                        }
+                    } else {
+                        Log.e("MainActivity", "Не удалось определить город по координатам")
+                    }
+                } else {
+                    Log.e("MainActivity", "Не удалось определить местоположение")
                 }
-            } else {
-                Log.e("MainActivity", "Не удалось определить местоположение")
             }
+        } else {
+            val city = FavoriteCitiesRepository.selectedCity.value!!
+            updateWeatherForCity(city)
         }
+    }
+
+    private fun updateWeatherForCity(city: City) {
+        cityTextView.text = city.name
+        updateAQI(city.lat, city.lon)
+        fetchWeatherData(city.name)
     }
 
     private fun updateAQI(lat: Double, lon: Double) {

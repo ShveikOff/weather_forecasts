@@ -21,8 +21,14 @@ class ExtendedForecastActivity : AppCompatActivity() {
         setContentView(R.layout.activity_extended_forecast)
         APImanager.initialize(this)
 
-        val cityName = "Bishkek" // Здесь можно динамически подставить выбранный город.
-        fetchForecast(cityName)
+        // Подписка на изменения выбранного города
+        FavoriteCitiesRepository.selectedCity.observe(this) { city ->
+            if (city != null) {
+                fetchForecast(city.name)
+            } else {
+                Log.e("ExtendedForecast", "Selected city is null")
+            }
+        }
     }
 
     private fun fetchForecast(city: String) {
