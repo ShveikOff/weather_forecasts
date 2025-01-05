@@ -41,4 +41,12 @@ interface WeatherAPI {
         @Query("appid") apiKey: String
     ): Call<CitySearchResponse>
 
+    @GET("weather")
+    fun getWeatherByCoordinates(
+        @Query("lat") latitude: Double,
+        @Query("lon") longitude: Double,
+        @Query("units") units: String = "metric",
+        @Query("appid") apiKey: String
+    ): Call<WeatherResponse>
+
 }

@@ -2,6 +2,7 @@ package com.example.weatherforecast
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.weatherforecast.api.APImanager
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -13,6 +14,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.example.weatherforecast.databinding.ActivityForecastMapBinding
 import com.google.android.gms.maps.model.Marker
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,17 +43,27 @@ class ForecastMapActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
 
-        // Отображение текущего местоположения пользователя
-        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-            if (location != null) {
-                val currentLatLng = LatLng(location.latitude, location.longitude)
-                map.addMarker(
-                    MarkerOptions()
-                        .position(currentLatLng)
-                        .title("Current Location")
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                )
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 10f))
+        val selectedCity = FavoriteCitiesRepository.selectedCity.value
+        if (selectedCity != null) {
+            val cityLatLng = LatLng(selectedCity.lat, selectedCity.lon)
+            map.addMarker(
+                MarkerOptions()
+                    .position(cityLatLng)
+                    .title(selectedCity.name)
+            )
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(cityLatLng, 10f))
+        } else {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                if (location != null) {
+                    val currentLatLng = LatLng(location.latitude, location.longitude)
+                    map.addMarker(
+                        MarkerOptions()
+                            .position(currentLatLng)
+                            .title("Current Location")
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                    )
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 10f))
+                }
             }
         }
 
@@ -68,20 +80,39 @@ class ForecastMapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    private val weatherMarkers = mutableListOf<Marker>()
+
     private fun addWeatherMarker(latLng: LatLng, weatherInfo: String) {
-        map.addMarker(
+        // Удаляем все предыдущие маркеры погоды
+        weatherMarkers.forEach { it.remove() }
+        weatherMarkers.clear()
+
+        // Добавляем новый маркер
+        val marker = map.addMarker(
             MarkerOptions()
                 .position(latLng)
                 .title("Weather Info")
                 .snippet(weatherInfo)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
-        )?.showInfoWindow()
+        )
+        marker?.showInfoWindow()
+        marker?.let { weatherMarkers.add(it) }
     }
 
-    // Временная функция для получения информации о погоде (заглушка)
+
     private suspend fun getWeatherInfo(lat: Double, lon: Double): String? {
-        // Здесь будет вызов к API для получения данных о погоде
-        // Сейчас возвращаем заглушку
-        return "Temperature: 15°C, Clear Sky"
+        return withContext(Dispatchers.IO) {
+            val result = CompletableDeferred<String?>()
+            APImanager.getWeatherByCoordinates(lat, lon) { weatherResponse ->
+                if (weatherResponse != null) {
+                    val temp = weatherResponse.main.temp
+                    val description = weatherResponse.weather.firstOrNull()?.description ?: "No data"
+                    result.complete("Temp: ${temp}°C, ${description.capitalize()}")
+                } else {
+                    result.complete(null)
+                }
+            }
+            result.await()
+        }
     }
 }

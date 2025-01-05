@@ -14,7 +14,6 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-
 object APImanager {
 
     // API ключ OpenRouteService
@@ -56,6 +55,8 @@ object APImanager {
             callback(null)
         } ?: callback(null)
     }
+
+
 
     // Получение текущей погоды4
     fun getWeather(city: String, callback: (WeatherResponse?) -> Unit) {
@@ -202,6 +203,26 @@ object APImanager {
             }
         })
     }
+
+    fun getWeatherByCoordinates(lat: Double, lon: Double, callback: (WeatherResponse?) -> Unit) {
+        val call = weatherAPI.getWeatherByCoordinates(lat, lon, "metric", OPENWEATHER_API_KEY)
+
+        call.enqueue(object : Callback<WeatherResponse> {
+            override fun onResponse(call: Call<WeatherResponse>, response: Response<WeatherResponse>) {
+                if (response.isSuccessful) {
+                    callback(response.body())
+                } else {
+                    callback(null)
+                }
+            }
+
+            override fun onFailure(call: Call<WeatherResponse>, t: Throwable) {
+                t.printStackTrace()
+                callback(null)
+            }
+        })
+    }
+
 
 
 }
