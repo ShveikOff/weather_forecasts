@@ -221,16 +221,8 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, ForecastMapActivity::class.java))
         }
 
-        findViewById<Button>(R.id.recommendation).setOnClickListener {
-            startActivity(Intent(this, RecomendationActivity::class.java))
-        }
-
         findViewById<ImageView>(R.id.addButton).setOnClickListener {
             startActivity(Intent(this, CityChooseActivity::class.java))
-        }
-
-        findViewById<ImageView>(R.id.settingsButton).setOnClickListener {
-            startActivity(Intent(this, SettingsActivity::class.java))
         }
     }
 

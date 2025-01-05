@@ -8,6 +8,8 @@ import com.example.weatherforecast.models.RouteResponse
 import com.github.mikephil.charting.BuildConfig
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -223,6 +225,96 @@ object APImanager {
         })
     }
 
+    // Это не работает из-за ограничения тарифного плана
+    /*
+    fun getTemperatureLayerData(bounds: LatLngBounds, callback: (List<Pair<LatLng, Float>>?) -> Unit) {
+        val boundingBox = "${bounds.southwest.latitude},${bounds.southwest.longitude},${bounds.northeast.latitude},${bounds.northeast.longitude}"
+        Log.d("APImanager", "Fetching temperature data for boundingBox: $boundingBox")
+
+        val call = weatherAPI.getWeatherForArea(
+            boundingBox,
+            "metric",
+            OPENWEATHER_API_KEY
+        )
+        call.enqueue(object : Callback<List<WeatherAreaData>> {
+            override fun onResponse(call: Call<List<WeatherAreaData>>, response: Response<List<WeatherAreaData>>) {
+                if (response.isSuccessful) {
+                    val data = response.body()?.map {
+                        LatLng(it.coord.lat, it.coord.lon) to it.main.temp
+                    }
+                    Log.d("APImanager", "Successfully fetched temperature data: $data")
+                    callback(data)
+                } else {
+                    Log.e("APImanager", "Failed to fetch temperature data: ${response.code()} - ${response.errorBody()?.string()}")
+                    callback(null)
+                }
+            }
+
+            override fun onFailure(call: Call<List<WeatherAreaData>>, t: Throwable) {
+                Log.e("APImanager", "Error fetching temperature data", t)
+                callback(null)
+            }
+        })
+    }
+
+    fun getPrecipitationLayerData(bounds: LatLngBounds, callback: (List<Pair<LatLng, Float>>?) -> Unit) {
+        val boundingBox = "${bounds.southwest.latitude},${bounds.southwest.longitude},${bounds.northeast.latitude},${bounds.northeast.longitude}"
+        Log.d("APImanager", "Fetching precipitation data for boundingBox: $boundingBox")
+
+        val call = weatherAPI.getPrecipitationData(
+            boundingBox,
+            OPENWEATHER_API_KEY
+        )
+        call.enqueue(object : Callback<PrecipitationResponse> {
+            override fun onResponse(call: Call<PrecipitationResponse>, response: Response<PrecipitationResponse>) {
+                if (response.isSuccessful) {
+                    val data = response.body()?.list?.map {
+                        LatLng(it.coord.lat, it.coord.lon) to it.precipitation.volume
+                    }
+                    Log.d("APImanager", "Successfully fetched precipitation data: $data")
+                    callback(data)
+                } else {
+                    Log.e("APImanager", "Failed to fetch precipitation data: ${response.code()} - ${response.errorBody()?.string()}")
+                    callback(null)
+                }
+            }
+
+            override fun onFailure(call: Call<PrecipitationResponse>, t: Throwable) {
+                Log.e("APImanager", "Error fetching precipitation data", t)
+                callback(null)
+            }
+        })
+    }
+
+    fun getAirQualityLayerData(bounds: LatLngBounds, callback: (List<Pair<LatLng, Int>>?) -> Unit) {
+        val boundingBox = "${bounds.southwest.latitude},${bounds.southwest.longitude},${bounds.northeast.latitude},${bounds.northeast.longitude}"
+        Log.d("APImanager", "Fetching air quality data for boundingBox: $boundingBox")
+
+        val call = weatherAPI.getAirQualityData(
+            boundingBox,
+            OPENWEATHER_API_KEY
+        )
+        call.enqueue(object : Callback<AirQualityMapResponse> {
+            override fun onResponse(call: Call<AirQualityMapResponse>, response: Response<AirQualityMapResponse>) {
+                if (response.isSuccessful) {
+                    val data = response.body()?.list?.map {
+                        LatLng(it.coord.lat, it.coord.lon) to it.main.aqi
+                    }
+                    Log.d("APImanager", "Successfully fetched air quality data: $data")
+                    callback(data)
+                } else {
+                    Log.e("APImanager", "Failed to fetch air quality data: ${response.code()} - ${response.errorBody()?.string()}")
+                    callback(null)
+                }
+            }
+
+            override fun onFailure(call: Call<AirQualityMapResponse>, t: Throwable) {
+                Log.e("APImanager", "Error fetching air quality data", t)
+                callback(null)
+            }
+        })
+    }
+    */
 
 
 }

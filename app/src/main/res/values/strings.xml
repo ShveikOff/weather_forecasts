@@ -9,6 +9,7 @@
     <string name="menu">Menu</string>
     <string name="layer_options">Layer Options</string>
     <string name="route_options">Route Options</string>
+    <string name="layer_selection">Выбор слоя</string>
     <string-array name="forecast_options">
         <item>For 5 days</item>
         <item>For 14 days</item>

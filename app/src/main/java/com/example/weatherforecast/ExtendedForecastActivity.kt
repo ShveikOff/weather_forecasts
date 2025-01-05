@@ -1,8 +1,11 @@
 package com.example.weatherforecast
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.weatherforecast.api.APImanager
@@ -14,6 +17,8 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import java.text.SimpleDateFormat
 import java.util.*
+import com.github.mikephil.charting.formatter.ValueFormatter
+
 
 class ExtendedForecastActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +34,8 @@ class ExtendedForecastActivity : AppCompatActivity() {
                 Log.e("ExtendedForecast", "Selected city is null")
             }
         }
+
+        initializeButtons()
     }
 
     private fun fetchForecast(city: String) {
@@ -68,25 +75,29 @@ class ExtendedForecastActivity : AppCompatActivity() {
         val entriesMax = dataPointsMax.mapIndexed { index, data ->
             Entry(index.toFloat(), data.second.toFloat())
         }
-        val dataSetMax = LineDataSet(entriesMax, "Max Temperature")
-        dataSetMax.color = ContextCompat.getColor(this, R.color.primaryColor)
-        dataSetMax.valueTextColor = ContextCompat.getColor(this, R.color.black)
-        dataSetMax.lineWidth = 2f
-        dataSetMax.circleRadius = 4f
-        dataSetMax.setDrawValues(true)
-        dataSetMax.valueTextSize = 14f
+        val dataSetMax = LineDataSet(entriesMax, "Max Temperature").apply {
+            color = ContextCompat.getColor(this@ExtendedForecastActivity, R.color.primaryColor)
+            valueTextColor = ContextCompat.getColor(this@ExtendedForecastActivity, R.color.black)
+            lineWidth = 2f
+            circleRadius = 5f
+            setDrawValues(true)
+            valueTextSize = 14f
+            valueFormatter = ValueFormatterWithUnit("°C") // Добавление °C
+        }
 
         // Точки для минимальной температуры
         val entriesMin = dataPointsMin.mapIndexed { index, data ->
             Entry(index.toFloat(), data.second.toFloat())
         }
-        val dataSetMin = LineDataSet(entriesMin, "Min Temperature")
-        dataSetMin.color = Color.BLUE
-        dataSetMin.valueTextColor = ContextCompat.getColor(this, R.color.black)
-        dataSetMin.lineWidth = 2f
-        dataSetMin.circleRadius = 4f
-        dataSetMin.setDrawValues(true)
-        dataSetMin.valueTextSize = 14f
+        val dataSetMin = LineDataSet(entriesMin, "Min Temperature").apply {
+            color = Color.BLUE
+            valueTextColor = ContextCompat.getColor(this@ExtendedForecastActivity, R.color.black)
+            lineWidth = 2f
+            circleRadius = 5f
+            setDrawValues(true)
+            valueTextSize = 14f
+            valueFormatter = ValueFormatterWithUnit("°C") // Добавление °C
+        }
 
         val lineData = LineData(dataSetMax, dataSetMin)
 
@@ -118,4 +129,18 @@ class ExtendedForecastActivity : AppCompatActivity() {
             invalidate() // Перерисовка графика
         }
     }
+
+
+    private fun initializeButtons() {
+        findViewById<ImageView>(R.id.backButton).setOnClickListener {
+            finish() // Закрытие текущей активности
+        }
+    }
 }
+
+class ValueFormatterWithUnit(private val unit: String) : ValueFormatter() {
+    override fun getFormattedValue(value: Float): String {
+        return "$value$unit"
+    }
+}
+

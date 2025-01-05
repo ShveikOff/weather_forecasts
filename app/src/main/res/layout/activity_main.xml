@@ -34,166 +34,68 @@
         android:layout_marginTop="16dp" />
 
     <!-- Иконка настроек -->
-    <ImageView
-        android:id="@+id/settingsButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_settings"
-        android:contentDescription="@string/settings"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp" />
 
     <!-- Круг с температурой -->
     <TextView
         android:id="@+id/temperatureCircle"
         android:layout_width="200dp"
         android:layout_height="200dp"
+        android:layout_marginTop="16dp"
         android:background="@drawable/circle_background"
         android:gravity="center"
         android:text="12°C\nFair 12°/5°"
-        android:textSize="30sp"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
-        app:layout_constraintTop_toBottomOf="@id/titleLabel"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/titleLabel" />
 
     <!-- Показатель AQI -->
     <TextView
         android:id="@+id/aqiLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="AQI 29"
-        android:textSize="16sp"
+        android:layout_marginTop="8dp"
         android:background="#AA3B82F6"
         android:padding="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/temperatureCircle"
+        android:text="AQI 29"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/temperatureCircle" />
 
     <!-- Утро, день, вечер с иконками -->
-    <LinearLayout
-        android:id="@+id/forecastLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/aqiLabel"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginHorizontal="16dp">
-
-        <!-- Утро -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-
-            <ImageView
-                android:id="@+id/morningImageView"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@drawable/ic_sunny"
-                android:contentDescription="@string/morning" />
-
-            <TextView
-                android:id="@+id/morningTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Fair 5°"
-                android:textColor="#3B82F6"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <!-- День -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-
-            <ImageView
-                android:id="@+id/afternoonImageView"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@drawable/ic_cloud"
-                android:contentDescription="@string/afternoon" />
-
-            <TextView
-                android:id="@+id/afternoonTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Cloudy 12°"
-                android:textColor="#3B82F6"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <!-- Вечер -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-
-            <ImageView
-                android:id="@+id/eveningImageView"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@drawable/ic_partly_cloudy_night"
-                android:contentDescription="@string/evening" />
-
-            <TextView
-                android:id="@+id/eveningTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Fair 7°"
-                android:textColor="#3B82F6"
-                android:textSize="14sp" />
-        </LinearLayout>
-    </LinearLayout>
 
 
     <!-- Нижние кнопки -->
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginHorizontal="16dp"
         android:layout_marginBottom="32dp"
-        android:layout_marginHorizontal="16dp">
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <Button
             android:id="@+id/button_extended"
+            style="@style/ButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Extended"
-            style="@style/ButtonStyle"/>
-
-        <Button
-            android:id="@+id/recommendation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text="Recommendation"
-            style="@style/ButtonStyle"/>
+            android:text="Extended" />
 
         <Button
             android:id="@+id/button_map"
+            style="@style/ButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Map"
-            style="@style/ButtonStyle"/>
+            android:text="Map" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

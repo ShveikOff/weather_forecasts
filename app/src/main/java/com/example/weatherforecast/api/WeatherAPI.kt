@@ -49,4 +49,26 @@ interface WeatherAPI {
         @Query("appid") apiKey: String
     ): Call<WeatherResponse>
 
+    // New endpoint for temperature layer data
+    @GET("box/city")
+    fun getWeatherForArea(
+        @Query("bbox") boundingBox: String, // Format: "lon-left,lat-bottom,lon-right,lat-top,zoom"
+        @Query("units") units: String = "metric",
+        @Query("appid") apiKey: String
+    ): Call<WeatherAreaResponse>
+
+    // New endpoint for precipitation layer data
+    @GET("precipitation")
+    fun getPrecipitationData(
+        @Query("bbox") boundingBox: String, // Format: "lon-left,lat-bottom,lon-right,lat-top,zoom"
+        @Query("appid") apiKey: String
+    ): Call<PrecipitationResponse>
+
+    // New endpoint for air quality layer data
+    @GET("air_pollution")
+    fun getAirQualityData(
+        @Query("bbox") boundingBox: String, // Format: "lon-left,lat-bottom,lon-right,lat-top,zoom"
+        @Query("appid") apiKey: String
+    ): Call<AirQualityMapResponse>
+
 }
