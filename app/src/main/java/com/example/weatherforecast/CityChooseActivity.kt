@@ -122,20 +122,19 @@ class CityChooseActivity : AppCompatActivity() {
 
     private fun showFavoriteCityDialog(city: City) {
         AlertDialog.Builder(this, R.style.AppTheme_Dialog_Alert)
-            .setTitle("Действия с городом")
-            .setMessage("Что вы хотите сделать с ${city.name}?")
-            .setPositiveButton("Переключиться на этот город") { _, _ ->
-                switchToCity(city) // Теперь переключение происходит через общий метод
-                Log.d("FavoriteCity", "Выбран город: ${city.name}")
+            .setTitle("Actions with the city")
+            .setMessage("What would you like to do with ${city.name}?")
+            .setPositiveButton("Switch to this city") { _, _ ->
+                switchToCity(city) // Now switching happens through the general method
+                Log.d("FavoriteCity", "Selected city: ${city.name}")
             }
-            .setNeutralButton("Отмена", null)
-            .setNegativeButton("Убрать из избранного") { _, _ ->
+            .setNeutralButton("Cancel", null)
+            .setNegativeButton("Remove from favorites") { _, _ ->
                 removeCityFromFavorites(city)
                 updateFavoriteCitiesView()
             }
             .show()
     }
-
 
     private fun removeCityFromFavorites(city: City) {
         FavoriteCitiesRepository.favoriteCities.remove(city)
