@@ -5,6 +5,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.TextView
 import android.widget.ImageView
@@ -60,41 +62,56 @@ class MainActivity : AppCompatActivity() {
 
     private fun fetchLocationAndSetWeather() {
         if (FavoriteCitiesRepository.selectedCity.value == null) {
-            APImanager.getCurrentLocation { location ->
-                if (location != null) {
-                    val geocoder = Geocoder(this, Locale.getDefault())
-                    val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-                    if (!addresses.isNullOrEmpty()) {
-                        val cityName = addresses[0].locality ?: "Unknown"
-                        APImanager.getWeather(cityName) { weatherResponse ->
-                            if (weatherResponse != null) {
-                                val city = City(
-                                    name = cityName,
-                                    aqi = "N/A", // AQI загружается отдельно
-                                    details = "",
-                                    temperature = "${weatherResponse.main.temp}°C", // Преобразование в строку
-                                    lat = location.latitude,
-                                    lon = location.longitude
-                                )
-                                FavoriteCitiesRepository.selectCity(city)
-                                updateAQI(location.latitude, location.longitude)
-                                fetchWeatherData(cityName)
-                            } else {
-                                Log.e("MainActivity", "Не удалось загрузить данные о погоде")
+            val maxRetries = 3
+            var attempt = 0
+            val delayBetweenRetries = 1000L // Задержка в миллисекундах (1 секунда)
+
+            fun attemptFetchLocation() {
+                APImanager.getCurrentLocation { location ->
+                    if (location != null) {
+                        val geocoder = Geocoder(this, Locale.getDefault())
+                        val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+                        if (!addresses.isNullOrEmpty()) {
+                            val cityName = addresses[0].locality ?: "Unknown"
+                            APImanager.getWeather(cityName) { weatherResponse ->
+                                if (weatherResponse != null) {
+                                    val city = City(
+                                        name = cityName,
+                                        aqi = "N/A", // AQI загружается отдельно
+                                        details = "",
+                                        temperature = "${weatherResponse.main.temp}°C", // Преобразование в строку
+                                        lat = location.latitude,
+                                        lon = location.longitude
+                                    )
+                                    FavoriteCitiesRepository.selectCity(city)
+                                    updateAQI(location.latitude, location.longitude)
+                                    fetchWeatherData(cityName)
+                                } else {
+                                    Log.e("MainActivity", "Не удалось загрузить данные о погоде")
+                                }
                             }
+                        } else {
+                            Log.e("MainActivity", "Не удалось определить город по координатам")
                         }
                     } else {
-                        Log.e("MainActivity", "Не удалось определить город по координатам")
+                        if (attempt < maxRetries) {
+                            attempt++
+                            Log.w("MainActivity", "Попытка $attempt из $maxRetries для определения местоположения")
+                            Handler(Looper.getMainLooper()).postDelayed(::attemptFetchLocation, delayBetweenRetries)
+                        } else {
+                            Log.e("MainActivity", "Не удалось определить местоположение после $maxRetries попыток")
+                        }
                     }
-                } else {
-                    Log.e("MainActivity", "Не удалось определить местоположение")
                 }
             }
+
+            attemptFetchLocation()
         } else {
             val city = FavoriteCitiesRepository.selectedCity.value!!
             updateWeatherForCity(city)
         }
     }
+
 
     private fun updateWeatherForCity(city: City) {
         cityTextView.text = city.name
